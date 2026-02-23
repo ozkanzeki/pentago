@@ -233,7 +233,37 @@
         if(currentPlayers.length % 2 !== 0) winners.push(currentPlayers[currentPlayers.length-1]);
         currentPlayers = winners; roundCount++; renderMatches();
     }
+function deleteSingle(id) {
+    if(confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
+        sendDelete([id]);
+    }
+}
 
+function deleteSelected() {
+    const ids = [...document.querySelectorAll('.del-check:checked')].map(c => c.value);
+    if(ids.length === 0) return alert("Lütfen silinecek öğrencileri seçin.");
+    if(confirm(ids.length + " öğrenciyi silmek istediğinize emin misiniz?")) {
+        sendDelete(ids);
+    }
+}
+
+function sendDelete(ids) {
+    setLoader(true);
+    fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ action: "delete", ids: ids })
+    }).then(() => {
+        alert("Seçilen kayıtlar başarıyla silindi.");
+        showAdminList(); // Listeyi yenile
+    }).catch(err => alert("Hata: " + err))
+      .finally(() => setLoader(false));
+}
+
+function toggleSelectAll() {
+    const master = document.getElementById('selectAll');
+    document.querySelectorAll('.del-check').forEach(c => c.checked = master.checked);
+}
     function resetTournament() {
         if(confirm("Tüm süreç sıfırlanacak. Emin misiniz?")) {
             roundCount = 1; document.getElementById('tournamentHistory').innerHTML = "";
