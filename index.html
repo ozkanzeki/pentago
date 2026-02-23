@@ -98,35 +98,34 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoLgdC6oFusw3w7O1rnscqreCC3cLdZviNuApV2YOHYABuggNN-ViAAQiBHAStBQWH/exec";
     let allStudents = [], registrations = [], currentPlayers = [], roundCount = 1;
 
-    window.onload = () => {
-        setLoader(true);
-        fetch(SCRIPT_URL).then(r => r.json()).then(data => {
-            allStudents = data;
-            
-            // KESİN FİLTRELEME: Belirttiğin sınıfları (Büyük-Küçük harf bakmaksızın) listeden atar.
-            const blocked = ["HAFİF ZİHİNSEL", "OTİSTİK", "ÖZEL EĞİTİM"];
-            const classes = [...new Set(data.map(s => s.sinif))].sort().filter(c => {
-                const upperClass = c.toUpperCase();
-                return !blocked.some(b => upperClass.includes(b));
-            });
+    // Sayfa yüklendiğinde sınıfları doldurur
+window.onload = () => {
+    setLoader(true);
+    fetch(SCRIPT_URL).then(r => r.json()).then(data => {
+        allStudents = data; // Bu veri artık sadece 'blocked' olmayan öğrencileri içeriyor
+        
+        // Sınıf listesini benzersiz olarak al
+        const classes = [...new Set(data.map(s => s.sinif))].sort();
+        const classSel = document.getElementById('classSelect');
+        classSel.innerHTML = '<option value="">Sınıf Seçiniz...</option>';
+        classes.forEach(c => {
+            if(c) classSel.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+    }).finally(() => setLoader(false));
+};
 
-            const classSel = document.getElementById('classSelect');
-            classSel.innerHTML = '<option value="">Sınıf Seçiniz...</option>';
-            classes.forEach(c => classSel.innerHTML += `<option value="${c}">${c}</option>`);
-        }).finally(() => setLoader(false));
-    };
-
-    function filterStudents() {
-        const cls = document.getElementById('classSelect').value;
-        const stuSel = document.getElementById('studentSelect');
-        stuSel.innerHTML = '<option value="">İsim Seçiniz...</option>';
-        if(cls) {
-            allStudents.filter(s => s.sinif == cls).forEach(s => {
-                stuSel.innerHTML += `<option value="${s.adSoyad}" data-no="${s.no}">${s.adSoyad}</option>`;
-            });
-            stuSel.disabled = false;
-        }
+function filterStudents() {
+    const cls = document.getElementById('classSelect').value;
+    const stuSel = document.getElementById('studentSelect');
+    stuSel.innerHTML = '<option value="">İsim Seçiniz...</option>';
+    if(cls) {
+        // Seçilen sınıfa göre öğrencileri filtrele
+        allStudents.filter(s => s.sinif == cls).forEach(s => {
+            stuSel.innerHTML += `<option value="${s.adSoyad}" data-no="${s.no}">${s.adSoyad}</option>`;
+        });
+        stuSel.disabled = false;
     }
+}
 
     function updateNo() {
         const sel = document.getElementById('studentSelect');
