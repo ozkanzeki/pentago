@@ -12,23 +12,32 @@
         .school-header { text-align: center; margin-bottom: 20px; }
         .school-name { font-weight: 800; color: #1e293b; font-size: 1.4rem; text-transform: uppercase; }
         .card { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
-        .admin-float { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 2000; border: 2px solid var(--p-blue); }
-        .score-box { width: 60px; height: 45px; text-align: center; border: 2px solid #e2e8f0; border-radius: 10px; font-weight: 800; font-size: 1.2rem; }
-        .match-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
-        #loader { position:fixed; inset:0; background:rgba(255,255,255,0.8); display:none; justify-content:center; align-items:center; z-index:9999; }
+        .admin-float { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 2000; border: 2px solid var(--p-blue); font-size: 1.2rem;}
+        .score-box { width: 55px; height: 40px; text-align: center; border: 2px solid #cbd5e1; border-radius: 8px; font-weight: 800; font-size: 1.1rem; }
+        .score-box:focus { border-color: var(--p-blue); outline: none; }
+        .match-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px; }
+        .round-badge { background-color: #1e293b; color: white; padding: 8px; border-radius: 8px; text-align: center; font-weight: 800; margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; }
+        #loader { position:fixed; inset:0; background:rgba(255,255,255,0.9); display:none; justify-content:center; align-items:center; z-index:9999; }
         
+        /* A4 Yazdırma Optimizasyonu (Sıkıştırılmış) */
         @media print { 
             .no-print { display: none !important; } 
-            .print-header { display: block !important; text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 1.6rem; }
-            .card { box-shadow: none; border: 1px solid #ccc; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 10px; font-weight: bold; font-size: 1.3rem; }
+            .school-header { margin-bottom: 10px !important; }
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; padding: 10px !important; margin-bottom: 10px !important; }
             body { background: white; }
+            /* Tabloyu Daraltma */
+            .table-sm th, .table-sm td { padding: 3px 5px !important; font-size: 11px !important; line-height: 1.1 !important; border-color: #ddd !important; }
+            h4 { font-size: 14px !important; margin: 5px 0 !important; }
+            .round-badge { background-color: #f8f9fa !important; color: #000 !important; border: 1px solid #000; padding: 4px; margin-top: 10px; margin-bottom: 5px; font-size: 12px;}
+            .match-card { page-break-inside: avoid; margin-bottom: 5px !important; padding: 5px !important;}
         }
         .print-header { display: none; }
     </style>
 </head>
 <body>
 
-<div id="loader"><div class="spinner-border text-primary"></div></div>
+<div id="loader"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div></div>
 <div class="admin-float no-print" onclick="adminLogin()">🔐</div>
 
 <div class="container my-4 px-3">
@@ -41,9 +50,9 @@
     </div>
 
     <div id="registration-page" class="card shadow">
-        <div class="game-header p-4 text-center border-bottom bg-white">
+        <div class="p-4 text-center border-bottom bg-white" style="border-top: 5px solid var(--p-blue);">
             <h2 class="fw-bold text-primary m-0">PENTAGO</h2>
-            <span class="badge bg-danger p-2">📅 Turnuva Tarihi: 24 ŞUBAT 2026</span>
+            <span class="badge bg-danger p-2 mt-2">📅 Turnuva Tarihi: 24 ŞUBAT 2026</span>
         </div>
         <div class="p-4">
             <div class="mb-3"><label class="small fw-bold">Sınıf</label><select id="classSelect" class="form-select form-select-lg" onchange="filterStudents()"></select></div>
@@ -57,15 +66,15 @@
 
     <div id="admin-list-page" style="display:none;">
         <div class="card p-4">
-            <div class="d-flex justify-content-between mb-3 no-print">
+            <div class="d-flex justify-content-between align-items-center mb-3 no-print">
                 <h4 class="fw-bold m-0">Katılımcı Listesi</h4>
                 <div>
-                    <button class="btn btn-dark btn-sm" onclick="window.print()">🖨️ Listeyi Yazdır</button>
-                    <button class="btn btn-success btn-sm" onclick="showMatchPage()">⚔️ Eşleştirmelere Geç</button>
+                    <button class="btn btn-dark btn-sm" onclick="window.print()">🖨️ Yazdır</button>
+                    <button class="btn btn-success btn-sm" onclick="showMatchPage()">⚔️ Turnuva Ağacı</button>
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-sm align-middle small">
+                <table class="table table-sm align-middle">
                     <thead class="table-light">
                         <tr><th class="no-print"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th><th>Sıra</th><th>No</th><th>Ad Soyad</th><th>Sınıf</th><th class="no-print">İşlem</th></tr>
                     </thead>
@@ -79,53 +88,55 @@
 
     <div id="match-page" style="display:none;">
         <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-            <h4 class="fw-bold m-0 text-success">Turnuva Akışı</h4>
+            <h4 class="fw-bold m-0 text-success">Turnuva Ağacı</h4>
             <div class="d-flex gap-1">
                 <button class="btn btn-outline-primary btn-sm" onclick="backToList()">⬅ Listeye Dön</button>
                 <button class="btn btn-danger btn-sm" onclick="resetTournament()">🔄 Sıfırla</button>
             </div>
         </div>
-        <div id="tournamentHistory"></div>
-        <div id="currentRoundArea"></div>
-        <div id="tournamentActions" class="mt-4 no-print" style="display:none;">
-            <button class="btn btn-success btn-lg w-100 fw-bold shadow" onclick="nextRound()">TURU TAMAMLA ⮕</button>
+
+        <div id="tournamentStartContainer" class="text-center my-5 no-print" style="display:none;">
+            <button class="btn btn-success btn-lg shadow-lg fw-bold p-4" onclick="generateFullBracket()">🎲 KURAYI ÇEK VE TURNUVAYI BAŞLAT</button>
+            <p class="text-muted mt-2 small">Turnuva bilgisayarın hafızasına kaydedilecektir.</p>
         </div>
-        <button id="finalPrintBtn" class="btn btn-dark w-100 mt-4 no-print" onclick="window.print()" style="display:none;">🖨️ Durumu Yazdır</button>
+
+        <div id="championArea"></div>
+        <div id="bracketArea"></div>
+
+        <button id="finalPrintBtn" class="btn btn-dark w-100 mt-4 no-print shadow" onclick="window.print()" style="display:none;">🖨️ Mevcut Tabloyu Yazdır</button>
     </div>
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoLgdC6oFusw3w7O1rnscqreCC3cLdZviNuApV2YOHYABuggNN-ViAAQiBHAStBQWH/exec";
-    let allStudents = [], registrations = [], currentPlayers = [], roundCount = 1;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcvqxOP2ahEdhqRPLtc0lmvwFH8bpbrjgZPKdZ41DRaay28XnMHTJnFm2-FjhhKAuY/exec";
+    let allStudents = [], registrations = [];
+    let bracketData = null; // Tüm turnuva ağacını tutan değişken
 
-    // Sayfa yüklendiğinde sınıfları doldurur
-window.onload = () => {
-    setLoader(true);
-    fetch(SCRIPT_URL).then(r => r.json()).then(data => {
-        allStudents = data; // Bu veri artık sadece 'blocked' olmayan öğrencileri içeriyor
-        
-        // Sınıf listesini benzersiz olarak al
-        const classes = [...new Set(data.map(s => s.sinif))].sort();
-        const classSel = document.getElementById('classSelect');
-        classSel.innerHTML = '<option value="">Sınıf Seçiniz...</option>';
-        classes.forEach(c => {
-            if(c) classSel.innerHTML += `<option value="${c}">${c}</option>`;
-        });
-    }).finally(() => setLoader(false));
-};
+    window.onload = () => {
+        setLoader(true);
+        fetch(SCRIPT_URL).then(r => r.json()).then(data => {
+            allStudents = data;
+            const blocked = ["HAFİF ZİHİNSEL", "OTİSTİK", "ÖZEL EĞİTİM"];
+            const classes = [...new Set(data.map(s => s.sinif))].sort().filter(c => {
+                return !blocked.some(b => c.toUpperCase().includes(b));
+            });
+            const classSel = document.getElementById('classSelect');
+            classSel.innerHTML = '<option value="">Sınıf Seçiniz...</option>';
+            classes.forEach(c => classSel.innerHTML += `<option value="${c}">${c}</option>`);
+        }).finally(() => setLoader(false));
+    };
 
-function filterStudents() {
-    const cls = document.getElementById('classSelect').value;
-    const stuSel = document.getElementById('studentSelect');
-    stuSel.innerHTML = '<option value="">İsim Seçiniz...</option>';
-    if(cls) {
-        // Seçilen sınıfa göre öğrencileri filtrele
-        allStudents.filter(s => s.sinif == cls).forEach(s => {
-            stuSel.innerHTML += `<option value="${s.adSoyad}" data-no="${s.no}">${s.adSoyad}</option>`;
-        });
-        stuSel.disabled = false;
+    function filterStudents() {
+        const cls = document.getElementById('classSelect').value;
+        const stuSel = document.getElementById('studentSelect');
+        stuSel.innerHTML = '<option value="">İsim Seçiniz...</option>';
+        if(cls) {
+            allStudents.filter(s => s.sinif == cls).forEach(s => {
+                stuSel.innerHTML += `<option value="${s.adSoyad}" data-no="${s.no}">${s.adSoyad}</option>`;
+            });
+            stuSel.disabled = false;
+        }
     }
-}
 
     function updateNo() {
         const sel = document.getElementById('studentSelect');
@@ -178,95 +189,196 @@ function filterStudents() {
         document.getElementById('admin-list-page').style.display = 'block';
     }
 
+    // --- TURNUVA AĞACI MANTIĞI (HAFIZALI) ---
     function showMatchPage() {
         document.getElementById('admin-list-page').style.display = 'none';
         document.getElementById('match-page').style.display = 'block';
-        document.getElementById('finalPrintBtn').style.display = 'block';
-        if(currentPlayers.length === 0) {
-            currentPlayers = registrations.map(r => ({n: r[2], c: r[3]}));
-            renderMatches();
+        
+        // Tarayıcı hafızasını kontrol et
+        const savedBracket = localStorage.getItem('pentagoBracketData');
+        
+        if(savedBracket) {
+            bracketData = JSON.parse(savedBracket);
+            document.getElementById('tournamentStartContainer').style.display = 'none';
+            document.getElementById('finalPrintBtn').style.display = 'block';
+            renderBracket();
+        } else {
+            document.getElementById('tournamentStartContainer').style.display = 'block';
+            document.getElementById('bracketArea').innerHTML = "";
+            document.getElementById('championArea').innerHTML = "";
+            document.getElementById('finalPrintBtn').style.display = 'none';
         }
     }
 
-    function renderMatches() {
-        currentPlayers.sort(() => Math.random() - 0.5);
-        const area = document.getElementById('currentRoundArea');
-        const actions = document.getElementById('tournamentActions');
+    function generateFullBracket() {
+        if(registrations.length < 2) return alert("Yeterli katılımcı yok!");
         
-        if(currentPlayers.length === 1) {
-            area.innerHTML = `<div class="card p-5 text-center shadow border-success"><h1 class="display-1">🏆</h1><h3>ŞAMPİYON: ${currentPlayers[0].n}</h3></div>`;
-            actions.style.display = 'none';
-            return;
-        }
+        let players = registrations.map(r => ({n: r[2], c: r[3]}));
+        players.sort(() => Math.random() - 0.5); // Karıştır
 
-        let html = `<div class="bg-primary text-white p-2 rounded mb-3 fw-bold">${roundCount}. TUR EŞLEŞMELERİ</div>`;
-        for(let i=0; i<currentPlayers.length; i+=2) {
-            if(currentPlayers[i+1]) {
-                html += `<div class="match-card p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-2"><span>${currentPlayers[i].n}</span><input type="number" class="score-box s-a" min="0" max="3"></div>
-                    <div class="d-flex justify-content-between align-items-center"><span>${currentPlayers[i+1].n}</span><input type="number" class="score-box s-b" min="0" max="3"></div>
-                </div>`;
+        bracketData = [];
+        let round0 = [];
+        
+        // İlk tur eşleşmeleri (Eğer tek ise son kişi BAY geçer)
+        for(let i=0; i < players.length; i+=2) {
+            if(players[i+1]) {
+                round0.push({ p1: [players[i]], p2: [players[i+1]], s1: null, s2: null, completed: false, isBye: false, winners: [] });
             } else {
-                html += `<div class="p-3 bg-light rounded mb-2 border-start border-warning border-4 fw-bold text-warning">✨ ${currentPlayers[i].n} (BAY)</div>`;
+                round0.push({ p1: [players[i]], p2: [], s1: null, s2: null, completed: true, isBye: true, winners: [players[i]] });
             }
         }
-        area.innerHTML = html;
-        actions.style.display = 'block';
-    }
+        bracketData.push(round0);
 
-    function nextRound() {
-        const sA = document.querySelectorAll('.s-a'), sB = document.querySelectorAll('.s-b');
-        let winners = [], error = false;
-        let roundRes = `<div class="fw-bold small mb-2 text-primary border-bottom">${roundCount}. Tur Sonuçları:</div>`;
+        // Boş yuvalarla (bekleyen koltuklar) finale kadar olan ağacı oluştur
+        let currentRoundMatches = round0.length;
+        while(currentRoundMatches > 1) {
+            let nextRoundMatches = Math.ceil(currentRoundMatches / 2);
+            let nextRound = [];
+            for(let i=0; i < nextRoundMatches; i++) {
+                nextRound.push({ p1: [], p2: [], s1: null, s2: null, completed: false, isBye: false, winners: [] });
+            }
+            bracketData.push(nextRound);
+            currentRoundMatches = nextRoundMatches;
+        }
 
-        sA.forEach((s, i) => {
-            const vA = parseInt(s.value), vB = parseInt(sB[i].value);
-            if(isNaN(vA) || isNaN(vB) || vA<0 || vA>3 || vB<0 || vB>3) { error = true; return; }
-            let win = vA > vB ? currentPlayers[i*2] : currentPlayers[i*2+1];
-            winners.push(win);
-            roundRes += `<div class="small p-1 border-bottom text-muted">${currentPlayers[i*2].n} (${vA}) - (${vB}) ${currentPlayers[i*2+1].n} ⮕ Kazanan: ${win.n}</div>`;
+        // İlk turdaki BAY geçenleri hemen 2. tura (varsa) aktar
+        bracketData[0].forEach((m, idx) => {
+            if(m.isBye) advancePlayer(0, idx, m.winners);
         });
 
-        if(error) return alert("Skorlar 0-3 arası olmalı!");
-        document.getElementById('tournamentHistory').innerHTML += `<div class="mb-3 bg-white p-3 rounded shadow-sm border opacity-75">${roundRes}</div>`;
-        if(currentPlayers.length % 2 !== 0) winners.push(currentPlayers[currentPlayers.length-1]);
-        currentPlayers = winners; roundCount++; renderMatches();
+        saveAndRender();
+        document.getElementById('tournamentStartContainer').style.display = 'none';
+        document.getElementById('finalPrintBtn').style.display = 'block';
     }
-function deleteSingle(id) {
-    if(confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
-        sendDelete([id]);
+
+    function advancePlayer(rIndex, mIndex, winners) {
+        if (rIndex + 1 >= bracketData.length) return; // Final bitti
+        
+        let nextMatchIndex = Math.floor(mIndex / 2);
+        let isPlayer1 = (mIndex % 2 === 0);
+        let nextMatch = bracketData[rIndex + 1][nextMatchIndex];
+
+        if(isPlayer1) nextMatch.p1 = winners;
+        else nextMatch.p2 = winners;
+
+        // Eğer bu sonraki maçın sadece 1 besleyicisi varsa (tek kaldıysa) otomatik BAY geçer
+        let totalFeedersForNextMatch = 0;
+        if(bracketData[rIndex].length > nextMatchIndex * 2) totalFeedersForNextMatch++;
+        if(bracketData[rIndex].length > nextMatchIndex * 2 + 1) totalFeedersForNextMatch++;
+
+        if(totalFeedersForNextMatch === 1 && nextMatch.p1.length > 0) {
+            nextMatch.isBye = true;
+            nextMatch.completed = true;
+            nextMatch.winners = nextMatch.p1;
+            advancePlayer(rIndex + 1, nextMatchIndex, nextMatch.winners);
+        }
     }
-}
 
-function deleteSelected() {
-    const ids = [...document.querySelectorAll('.del-check:checked')].map(c => c.value);
-    if(ids.length === 0) return alert("Lütfen silinecek öğrencileri seçin.");
-    if(confirm(ids.length + " öğrenciyi silmek istediğinize emin misiniz?")) {
-        sendDelete(ids);
+    function saveMatchScore(rIndex, mIndex) {
+        const match = bracketData[rIndex][mIndex];
+        const vA = parseInt(document.getElementById(`sA_${rIndex}_${mIndex}`).value);
+        const vB = parseInt(document.getElementById(`sB_${rIndex}_${mIndex}`).value);
+
+        if(isNaN(vA) || isNaN(vB) || vA < 0 || vA > 3 || vB < 0 || vB > 3) {
+            return alert("Skorlar 0 ile 3 arasında olmalıdır!");
+        }
+
+        match.s1 = vA;
+        match.s2 = vB;
+        match.completed = true;
+
+        // Kazanını belirle (Beraberlik durumunda ikisi de çıkar)
+        if(vA > vB) match.winners = [...match.p1];
+        else if(vB > vA) match.winners = [...match.p2];
+        else match.winners = [...match.p1, ...match.p2]; // BERABERLİK
+
+        advancePlayer(rIndex, mIndex, match.winners);
+        saveAndRender();
     }
-}
 
-function sendDelete(ids) {
-    setLoader(true);
-    fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({ action: "delete", ids: ids })
-    }).then(() => {
-        alert("Seçilen kayıtlar başarıyla silindi.");
-        showAdminList(); // Listeyi yenile
-    }).catch(err => alert("Hata: " + err))
-      .finally(() => setLoader(false));
-}
+    function saveAndRender() {
+        localStorage.setItem('pentagoBracketData', JSON.stringify(bracketData));
+        renderBracket();
+    }
 
-function toggleSelectAll() {
-    const master = document.getElementById('selectAll');
-    document.querySelectorAll('.del-check').forEach(c => c.checked = master.checked);
-}
+    function getNames(playerArray) {
+        if(!playerArray || playerArray.length === 0) return "";
+        return playerArray.map(p => p.n).join(' & '); // Beraberlikte isimleri & ile birleştirir
+    }
+
+    function renderBracket() {
+        let html = "";
+        let finalMatch = bracketData[bracketData.length - 1][0];
+
+        if(finalMatch && finalMatch.completed && !finalMatch.isBye) {
+            document.getElementById('championArea').innerHTML = `
+            <div class="card p-4 text-center shadow border-success mb-4 bg-success text-white">
+                <h1 class="display-1 m-0">🏆</h1>
+                <h3 class="fw-bold m-0 mt-2">ŞAMPİYON</h3>
+                <h2 class="fw-bold">${getNames(finalMatch.winners)}</h2>
+            </div>`;
+        } else {
+            document.getElementById('championArea').innerHTML = "";
+        }
+
+        bracketData.forEach((round, rIndex) => {
+            let roundName = (rIndex + 1) + ". TUR";
+            if(bracketData.length > 1) {
+                if(rIndex === bracketData.length - 1) roundName = "FİNAL";
+                else if(rIndex === bracketData.length - 2) roundName = "YARI FİNAL";
+                else if(rIndex === bracketData.length - 3) roundName = "ÇEYREK FİNAL";
+            }
+
+            html += `<div class="round-badge">${roundName}</div>`;
+            
+            round.forEach((m, mIndex) => {
+                if(m.isBye) {
+                    html += `<div class="p-2 bg-light rounded mb-2 border-start border-warning border-4 small fw-bold text-warning shadow-sm">✨ ${getNames(m.p1)} (BAY GEÇTİ)</div>`;
+                    return;
+                }
+
+                let p1Ready = m.p1 && m.p1.length > 0;
+                let p2Ready = m.p2 && m.p2.length > 0;
+                let bothReady = p1Ready && p2Ready;
+
+                let p1NameHTML = p1Ready ? `<span class="fw-bold">${getNames(m.p1)}</span>` : `<span class="text-muted small">⏳ Alt turdan rakip bekleniyor...</span>`;
+                let p2NameHTML = p2Ready ? `<span class="fw-bold">${getNames(m.p2)}</span>` : `<span class="text-muted small">⏳ Alt turdan rakip bekleniyor...</span>`;
+
+                if(m.completed) {
+                    let resultText = "";
+                    if(m.s1 > m.s2) resultText = `Kazanan: <span class="text-success">${getNames(m.p1)}</span>`;
+                    else if(m.s2 > m.s1) resultText = `Kazanan: <span class="text-success">${getNames(m.p2)}</span>`;
+                    else resultText = `<span class="text-warning">Berabere (İkisi de çıktı)</span>`;
+
+                    html += `<div class="match-card p-3 shadow-sm" style="background-color: #f8fafc; border-color: #cbd5e1; opacity: 0.85;">
+                        <div class="d-flex justify-content-between mb-2"><span>${p1NameHTML}</span> <span class="badge bg-secondary fs-6">${m.s1}</span></div>
+                        <div class="d-flex justify-content-between mb-2"><span>${p2NameHTML}</span> <span class="badge bg-secondary fs-6">${m.s2}</span></div>
+                        <div class="small text-center fw-bold border-top pt-2 mt-2">${resultText}</div>
+                    </div>`;
+                } else {
+                    html += `<div class="match-card p-3 shadow-sm border-start border-primary border-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            ${p1NameHTML}
+                            <input type="number" id="sA_${rIndex}_${mIndex}" class="score-box" min="0" max="3" ${!bothReady ? 'disabled' : ''}>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            ${p2NameHTML}
+                            <input type="number" id="sB_${rIndex}_${mIndex}" class="score-box" min="0" max="3" ${!bothReady ? 'disabled' : ''}>
+                        </div>
+                        ${bothReady ? `<button class="btn btn-primary btn-sm w-100 mt-2 fw-bold" onclick="saveMatchScore(${rIndex}, ${mIndex})">Skoru Kaydet ve Üst Tura Gönder</button>` : `<button class="btn btn-secondary btn-sm w-100 mt-2 opacity-50" disabled>Rakiplerin Belli Olması Bekleniyor</button>`}
+                    </div>`;
+                }
+            });
+        });
+
+        document.getElementById('bracketArea').innerHTML = html;
+    }
+
     function resetTournament() {
-        if(confirm("Tüm süreç sıfırlanacak. Emin misiniz?")) {
-            roundCount = 1; document.getElementById('tournamentHistory').innerHTML = "";
-            currentPlayers = registrations.map(r => ({n: r[2], c: r[3]})); renderMatches();
+        if(confirm("DİKKAT! Başlamış olan turnuvanın tüm eşleşmeleri ve skorları SİLİNECEK. Devam edilsin mi?")) {
+            localStorage.removeItem('pentagoBracketData');
+            bracketData = null;
+            showMatchPage();
         }
     }
     
@@ -275,7 +387,17 @@ function toggleSelectAll() {
         const master = document.getElementById('selectAll');
         document.querySelectorAll('.del-check').forEach(c => c.checked = master.checked);
     }
-    // Delete functions remains the same...
+    function deleteSingle(id) { if(confirm("Kaydı silmek istiyor musunuz?")) sendDelete([id]); }
+    function deleteSelected() {
+        const ids = [...document.querySelectorAll('.del-check:checked')].map(c => c.value);
+        if(ids.length === 0) return alert("Seçim yapmadınız.");
+        if(confirm(ids.length + " kayıt silinecek. Emin misiniz?")) sendDelete(ids);
+    }
+    function sendDelete(ids) {
+        setLoader(true);
+        fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "delete", ids: ids }) })
+        .then(() => { showAdminList(); });
+    }
 </script>
 </body>
 </html>
